@@ -94,7 +94,7 @@ class TodoContainer extends Component {
 
     render() {
         const {todosDisplay, title, showCompleted} = this.state;
-        const showCompletedText = showCompleted ? 'Ocultar completados' : 'Mostrar completados';
+        const showCompletedText = showCompleted ? 'Hide Completed' : 'Show completed';
 
         return (
             <div className="TodoContainer">
