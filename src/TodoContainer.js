@@ -1,6 +1,17 @@
 import React, {Component} from 'react';
 import Todo from './components/Todo';
 
+function filterTodos(showCompleted) {
+    console.log(showCompleted);
+    return function(todo) {
+        if (!showCompleted)
+            return !todo.completed;
+        return true;
+    }
+}
+
+// const filterTodos = showCompleted => todo => showCompleted || !todo.completed;
+
 class TodoContainer extends Component {
 
     constructor(props) {
@@ -9,17 +20,10 @@ class TodoContainer extends Component {
 
         this.state = {
             todos,
-            todosDisplay: [],
             showCompleted: false,
             title: ''
         };
-
-        console.log(todos);
     };
-
-    componentDidMount() {
-        this.filterTodos();
-    }
 
     filterTodos() {
         const { showCompleted, todos } = this.state;
@@ -39,13 +43,10 @@ class TodoContainer extends Component {
         e.preventDefault();
         this.setState({
             showCompleted: !this.state.showCompleted
-        }, () => { this.filterTodos(); });
-
+        });
     };
 
     handleTitleChange = e => {
-        console.log(e);
-        console.log(e.target.keyCode);
         this.setState({
             title: e.target.value
         });
@@ -65,7 +66,6 @@ class TodoContainer extends Component {
             todos,
             title: ''
         }, () => {
-            this.filterTodos();
             this.saveTodos(todos);
         });
     };
@@ -86,31 +86,27 @@ class TodoContainer extends Component {
             todos: todos
         }, () => {
             this.saveTodos(todos);
-            this.filterTodos();
         });
-
-
     };
 
     render() {
-        const {todosDisplay, title, showCompleted} = this.state;
+        const {todos, title, showCompleted} = this.state;
         const showCompletedText = showCompleted ? 'Hide Completed' : 'Show completed';
+
+        const todosDisplay = todos.filter(filterTodos(showCompleted)).map((todo) =>
+                <Todo
+                    todo={todo}
+                    key={todo.id}
+                    onBlur={this.handleTodoBlur}
+                />
+        );
 
         return (
             <div className="TodoContainer">
                 {todosDisplay.length > 0 &&
                 <div className="todos">
                     <ul>
-                        {todosDisplay.map((todo, index) => {
-                            console.log(todo.title);
-                            return (
-                                <Todo
-                                    todo={todo}
-                                    key={index}
-                                    onBlur={this.handleTodoBlur}
-                                />
-                            )
-                        })}
+                        {todosDisplay}
                     </ul>
                 </div>
                 }
@@ -131,7 +127,7 @@ class TodoContainer extends Component {
 
                 <footer>
                     <p>{todosDisplay.length} todos</p>
-                    <a href="#" onClick={this.filterTodosClickHandler}>{showCompletedText}</a>
+                    <button onClick={this.filterTodosClickHandler}>{showCompletedText}</button>
                 </footer>
 
             </div>
