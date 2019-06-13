@@ -1,28 +1,9 @@
 import React, {Component} from 'react';
 import Todo from './components/Todo';
-import {Search} from "./Search";
+import {Search} from "./components/Search";
+import {filterTodos} from "./filters/TodoFilter";
+import TodoAdd from "./components/TodoAdd";
 
-// function filterTodos(showCompleted, searchTerm) {
-//     return function(todo) {
-//         if (!showCompleted) {
-//             if (todo.completed)
-//                 return false;
-//         }
-//
-//         return todo.title.toLowerCase().includes(searchTerm);
-//     }
-// }
-
-const filterTodos = (showCompleted, searchTerm) => todo => {
-
-        if (!showCompleted) {
-            if (todo.completed)
-                return false;
-        }
-
-        return todo.title.toLowerCase().includes(searchTerm);
-    
-}
 
 class TodoContainer extends Component {
 
@@ -38,20 +19,6 @@ class TodoContainer extends Component {
         };
     };
 
-    filterTodos() {
-        const { showCompleted, todos } = this.state;
-        console.log(`Filter todos: mostrando completados ${showCompleted}`);
-
-        if (showCompleted)
-            this.setState({
-                todosDisplay: todos
-            });
-        else {
-            const todosDisplay = todos.filter(t => {return t.completed === false});
-            this.setState({ todosDisplay });
-        }
-    }
-
     filterTodosClickHandler = e => {
         e.preventDefault();
         this.setState({
@@ -62,6 +29,12 @@ class TodoContainer extends Component {
     handleTitleChange = e => {
         this.setState({
             title: e.target.value
+        });
+    };
+
+    handleSearchChange = e => {
+        this.setState({
+            searchTerm: e.target.value
         });
     };
 
@@ -102,17 +75,13 @@ class TodoContainer extends Component {
         });
     };
 
-    handleSearchChange = e => {
-        this.setState({
-            searchTerm: e.target.value
-        });
-    }
-
     render() {
         const {todos, title, showCompleted, searchTerm} = this.state;
         const showCompletedText = showCompleted ? 'Hide Completed' : 'Show completed';
 
-        const todosDisplay = todos.filter(filterTodos(showCompleted, searchTerm)).map((todo) =>
+        const todosDisplay = todos
+            .filter(filterTodos(showCompleted, searchTerm))
+            .map((todo) =>
                 <Todo
                     todo={todo}
                     key={todo.id}
@@ -126,30 +95,27 @@ class TodoContainer extends Component {
                 <Search onChange={this.handleSearchChange}/>
 
                 {todosDisplay.length > 0 &&
-                <div className="todos">
-                    <ul>
-                        {todosDisplay}
-                    </ul>
-                </div>
+                    <div className="todos">
+                        <ul>
+                            {todosDisplay}
+                        </ul>
+                    </div>
                 }
 
-                <div className="addTodo">
-                    <input
-                        type="text"
-                        value={this.state.title}
-                        onChange={this.handleTitleChange}
-                    />
-                    <button
-                        disabled={title.length === 0}
-                        onClick={this.addTodo}
-                    >
-                        Agregar
-                    </button>
-                </div>
+                <TodoAdd
+                    value={this.state.title}
+                    onChange={this.handleTitleChange}
+                    title={title}
+                    onClick={this.addTodo}
+                />
 
                 <footer>
                     <p>{todosDisplay.length} todos</p>
-                    <button onClick={this.filterTodosClickHandler}>{showCompletedText}</button>
+                    <button
+                        onClick={this.filterTodosClickHandler}
+                    >
+                        {showCompletedText}
+                    </button>
                 </footer>
 
             </div>
