@@ -1,18 +1,28 @@
 import React, {Component} from 'react';
 import Todo from './components/Todo';
+import {Search} from "./Search";
 
-function filterTodos(showCompleted, searchTerm) {
-    return function(todo) {
+// function filterTodos(showCompleted, searchTerm) {
+//     return function(todo) {
+//         if (!showCompleted) {
+//             if (todo.completed)
+//                 return false;
+//         }
+//
+//         return todo.title.toLowerCase().includes(searchTerm);
+//     }
+// }
+
+const filterTodos = (showCompleted, searchTerm) => todo => {
+
         if (!showCompleted) {
             if (todo.completed)
                 return false;
         }
 
         return todo.title.toLowerCase().includes(searchTerm);
-    }
+    
 }
-
-// const filterTodos = showCompleted => todo => showCompleted || !todo.completed;
 
 class TodoContainer extends Component {
 
@@ -113,11 +123,7 @@ class TodoContainer extends Component {
 
         return (
             <div className="TodoContainer">
-                <input
-                    type="text"
-                    name="search"
-                    onChange={this.handleSearchChange}
-                />
+                <Search onChange={this.handleSearchChange}/>
 
                 {todosDisplay.length > 0 &&
                 <div className="todos">
