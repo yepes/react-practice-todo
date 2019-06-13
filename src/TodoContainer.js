@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
 import Todo from './components/Todo';
 
-function filterTodos(showCompleted) {
-    console.log(showCompleted);
+function filterTodos(showCompleted, searchTerm) {
     return function(todo) {
-        if (!showCompleted)
-            return !todo.completed;
-        return true;
+        if (!showCompleted) {
+            if (todo.completed)
+                return false;
+        }
+
+        return todo.title.toLowerCase().includes(searchTerm);
     }
 }
 
@@ -21,7 +23,8 @@ class TodoContainer extends Component {
         this.state = {
             todos,
             showCompleted: false,
-            title: ''
+            title: '',
+            searchTerm: ''
         };
     };
 
@@ -89,20 +92,33 @@ class TodoContainer extends Component {
         });
     };
 
+    handleSearchChange = e => {
+        this.setState({
+            searchTerm: e.target.value
+        });
+    }
+
     render() {
-        const {todos, title, showCompleted} = this.state;
+        const {todos, title, showCompleted, searchTerm} = this.state;
         const showCompletedText = showCompleted ? 'Hide Completed' : 'Show completed';
 
-        const todosDisplay = todos.filter(filterTodos(showCompleted)).map((todo) =>
+        const todosDisplay = todos.filter(filterTodos(showCompleted, searchTerm)).map((todo) =>
                 <Todo
                     todo={todo}
                     key={todo.id}
+                    value={searchTerm}
                     onBlur={this.handleTodoBlur}
                 />
         );
 
         return (
             <div className="TodoContainer">
+                <input
+                    type="text"
+                    name="search"
+                    onChange={this.handleSearchChange}
+                />
+
                 {todosDisplay.length > 0 &&
                 <div className="todos">
                     <ul>
